@@ -6,7 +6,7 @@ require('dotenv').config();
 
 const sauceRoutes = require('./routes/sauce');
 const userRoutes = require('./routes/user');
-console.log(process.env.DB_URL);
+
 // Connecte la base de donnée Mongoose :
 mongoose.connect(`${process.env.DB_URL}://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_URL_CLUSTER}`,
   { useNewUrlParser: true,
