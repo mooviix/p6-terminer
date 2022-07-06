@@ -1,16 +1,17 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const cryptojs = require('crypto-js');
+const cryptoJs = require('crypto-js');
+const winston = require('winston');
 require('dotenv').config();
 
 // Enregistre un nouvel utilisateur dans la base de donnée :
 exports.signup = (req, res, next) => {
-    const hashedEmail = cryptojs.HmacSHA512(req.body.email, process.env.SECRET_CRYPTOJS_TOKEN).toString(cryptojs.enc.Base64);
+    let monMailCrypte = cryptoJs.HmacSHA256(req.body.email, process.env.CRYPTOSALT).toString(); 
     bcrypt.hash(req.body.password, 10)
         .then(hash => {
             const user = new User({
-                email: hashedEmail,
+                email: monMailCrypte,
                 password: hash
             });
             user.save()
@@ -22,8 +23,8 @@ exports.signup = (req, res, next) => {
 
 // Recherche si les identifiants sont correct et accorde un Token valable 24h afin de sécuriser la session de l'utilisateur :
 exports.login = (req, res, next) => {
-    const hashedEmail = cryptojs.HmacSHA512(req.body.email, process.env.SECRET_CRYPTOJS_TOKEN).toString(cryptojs.enc.Base64);
-    User.findOne({ email: hashedEmail })
+    let monMailCrypte = cryptoJs.HmacSHA256(req.body.email, process.env.CRYPTOSALT).toString(); 
+    User.findOne({ email: monMailCrypte })
         .then(user => {
             if (!user) {
                 return res.status(401).json({ error: 'Utilisateur introuvable !' });
