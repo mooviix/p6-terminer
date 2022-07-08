@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const cryptoJs = require('crypto-js');
-const winston = require('winston');
+const log = require('../utils/winston');
 require('dotenv').config();
 
 // Enregistre un nouvel utilisateur dans la base de donnée :

@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require("path");
 const app = express();
+const helmet = require('helmet');
 require('dotenv').config();
 
 const sauceRoutes = require('./routes/sauce');
@@ -15,6 +16,11 @@ mongoose.connect(`${process.env.DB_URL}://${process.env.DB_USER}:${process.env.D
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 app.use(express.json());
+
+app.use(helmet({
+  crossOriginResourcePolicy: false,
+}
+));
 
 // Evite les bloquage CORS en autorisant les entêtes :
 app.use((req, res, next) => {
