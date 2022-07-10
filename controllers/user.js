@@ -16,19 +16,28 @@ exports.signup = (req, res, next) => {
             });
             user.save()
                 .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
-                .catch(error => res.status(400).json({ error }));
+                .catch((error) => {
+                    log.error(`erreur dans catch delete one = ${error}`);
+                    return res.status(400).json({error})
+                  });
         })
         .catch(error => res.status(500).json({ error }));
 };
 
 // Recherche si les identifiants sont correct et accorde un Token valable 24h afin de sécuriser la session de l'utilisateur :
 exports.login = (req, res, next) => {
+
+    
     let monMailCrypte = cryptoJs.HmacSHA256(req.body.email, process.env.CRYPTOSALT).toString(); 
+    log.info(monMailCrypte);
+    log.info(process.env.CRYPTOSALT);
     User.findOne({ email: monMailCrypte })
         .then(user => {
             if (!user) {
                 return res.status(401).json({ error: 'Utilisateur introuvable !' });
             }
+            log.info(req.body.password);
+            log.info(user.password);
             bcrypt.compare(req.body.password, user.password)
                 .then(valid => {
                     if (!valid) {
@@ -43,7 +52,10 @@ exports.login = (req, res, next) => {
                         )
                     });
                 })
-                .catch(error => res.status(401).json({ error }));
+                .catch((error) => {
+                    log.error(`catch bcrypt = ${error}`);
+                    return res.status(401).json({error})
+                  });
         })
         .catch(error => res.status(500).json({ error }));
 };
